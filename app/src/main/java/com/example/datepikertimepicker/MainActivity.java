@@ -2,13 +2,17 @@ package com.example.datepikertimepicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -17,6 +21,8 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity {
     TextView txtDateTime;
     Button btnTime, btnDate;
+    EditText edtSeconds;
+    Button btnStartTimer;
     Calendar dateTime = Calendar.getInstance();
 
     @Override
@@ -26,6 +32,18 @@ public class MainActivity extends AppCompatActivity {
         txtDateTime = findViewById(R.id.txtDateTime);
         btnDate = findViewById(R.id.btnDate);
         btnTime = findViewById(R.id.btnTime);
+        edtSeconds = findViewById(R.id.edtSeconds);
+        btnStartTimer = findViewById(R.id.btnStartTimer);
+
+        btnStartTimer.setOnClickListener(view -> {
+            int seconds = Integer.parseInt(edtSeconds.getText().toString());
+
+            Intent intent = new Intent(MainActivity.this, Alarm.class);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + seconds * 1000L,
+                    PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0));
+        });
+
         //Установка начальной даты и времени
         txtDateTime.setText(DateUtils.formatDateTime(this,
                 dateTime.getTimeInMillis(),
